@@ -1,6 +1,7 @@
 import { Menu } from 'antd'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
+import { AiOutlineAudit, AiOutlineDashboard, AiOutlineSetting } from "react-icons/ai"
 
 const Layout = () => {
     
@@ -8,17 +9,17 @@ const Layout = () => {
         {
             key : '/',
             label : "Dashboard",
-            onClick : ()=>{
-
-            }
+            icon : <AiOutlineDashboard/>
         },
         {
             key : '/mahasiswa',
-            label : 'Data Mahasiswa'
+            label : 'Data Mahasiswa',
+            icon : <AiOutlineAudit/>
         },
         {
             key : '/settings',
-            label : 'Settings'
+            label : 'Settings',
+            icon : <AiOutlineSetting/>
         }
     ]
     return (
