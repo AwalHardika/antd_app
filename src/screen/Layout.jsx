@@ -2,6 +2,8 @@ import { Menu } from 'antd'
 import React, { useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { AiOutlineAudit, AiOutlineDashboard, AiOutlineLogout, AiOutlineSetting, AiOutlineSwapLeft } from "react-icons/ai"
+import supabase from '../connector'
+import AlertMessage from '../components/Alert'
 
 
 const Layout = () => {
@@ -40,6 +42,23 @@ const Layout = () => {
                 navigate("/settings")
             }
         },
+        {
+            key : '/logout',
+            label: 'Logout',
+            icon : <AiOutlineLogout/>,
+            onClick : ()=>{
+                let conf = window.confirm("Apakah yakin anda ingin logout ?")
+                if(!conf) return
+                supabase.auth.signOut()
+                .then(res=>{
+                    
+                })
+            },
+            style : {
+                
+            }
+        },
+
    
     ]
     return (
