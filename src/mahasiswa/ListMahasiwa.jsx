@@ -4,6 +4,7 @@ import supabase from '../connector'
 import ModalForm from '../components/ModalForm'
 import Chance from 'chance'
 import ModalFormEdit from '../components/ModalFormEdit'
+import { useQuery } from '@tanstack/react-query'
 
 const ListMahasiwa = () => {
   const [dataMhs, setDataMhs] = useState([])
@@ -44,7 +45,7 @@ const ListMahasiwa = () => {
     
         supabase.from("mahasiswa").insert(fakeData)
         .then(res=>{
-          setRefresh(prev=>prev=!prev)
+          refetch().then(res=>{ return res})
         })
     
       }
@@ -139,7 +140,7 @@ confirm({
   onOk(){
   supabase.from("mahasiswa").delete().in("id", selectedRowKeys)
   .then(res=>{
-  setRefresh(prev=>prev=!prev)
+  refetch().then(res=>{ return res})
   setSelectedRowKeys([])
   })
   }
@@ -147,18 +148,40 @@ confirm({
 }
 
 function handleSearch(e){
-supabase.from("mahasiswa").select("*").ilike("nama", `%${e}%`)
-.then(res=>{
-  setDataMhs(res.data)
-})
+if(e !== ""){
+  supabase.from("mahasiswa").select("*").ilike("nama", `%${e}%`)
+  .then(res=>{
+    setDataMhs(res.data)
+  })
+  return
+}
+supabase.from("mahasiswa").select("*").order("id", {ascending: false})
+.then(
+  res=>{
+    setDataMhs(res.data)
+  }
+)
 }
  
-  useEffect(()=>{
-    supabase.from("mahasiswa").select("*").order("id", {ascending:false})
-    .then(res=>{
-        setDataMhs(res.data)
-    })
-  }, [refresh])
+  // useEffect(()=>{
+    // supabase.from("mahasiswa").select("*").order("id", {ascending:false})
+  //   .then(res=>{
+  //       setDataMhs(res.data)
+  //   })
+  // }, [refresh])
+
+  const {data, isError, isLoading, refetch} = useQuery({
+    queryKey : ['read_mhs'],
+    queryFn : async ()=>{
+      try {
+        const response = await supabase.from("mahasiswa").select("*").order("id", {ascending:false})
+        console.log(response.data)
+        return response.data
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
 
   return (
     <div className='w-full p-8'>
@@ -167,7 +190,7 @@ supabase.from("mahasiswa").select("*").ilike("nama", `%${e}%`)
             <ModalForm 
             isOpen={isModalFormOpen}
             isCancel={()=>{setIsModalFormOpen(false)}}  
-            isRefresh={handleRefresh}          
+                      
             />
           )
         }
@@ -217,7 +240,7 @@ supabase.from("mahasiswa").select("*").ilike("nama", `%${e}%`)
         
         <Table
         columns={column }
-        dataSource={dataMhs}
+        dataSource={data}
         rowSelection = {rowSelection}
         rowKey="id"
         />
