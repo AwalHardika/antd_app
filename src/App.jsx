@@ -9,8 +9,7 @@ import ListMahasiwa from './mahasiswa/ListMahasiwa';
 const App = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true)
-
-
+  
   useEffect(() => {
     // Fetch initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -25,18 +24,19 @@ const App = () => {
 
 
 
-   
-
     // Clean up
-    return () => {
-     
-      subscription.unsubscribe();
-    };
+    return () =>subscription.unsubscribe();
+    
   }, []);
-  
+
   if(loading){
-    return (<h1>Loading guys</h1>)
+    return (
+      <div className='w-screen h-screen flex justify-center items-center'>
+        <h1>Loading Boss</h1>
+      </div>
+    )
   }
+
   if (!session) {
     return (
       <Routes>

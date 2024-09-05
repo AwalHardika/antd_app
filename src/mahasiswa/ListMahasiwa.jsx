@@ -13,7 +13,7 @@ const ListMahasiwa = () => {
   const [isModalEdit, setIsModalEdit] = useState(false)
   const [dataEdit, setDataEdit] = useState({})
 
-  const [refresh, setRefresh] = useState(false)
+  // const [refresh, setRefresh] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
   
   const {confirm} = Modal
@@ -45,7 +45,7 @@ const ListMahasiwa = () => {
     
         supabase.from("mahasiswa").insert(fakeData)
         .then(res=>{
-          refetch().then(res=>{ return res})
+          refetch()
         })
     
       }
@@ -64,7 +64,7 @@ const ListMahasiwa = () => {
   function handleSingleDelete(id){
     supabase.from("mahasiswa").delete().eq("id", id)
     .then(res=>{
-      setRefresh(prev=>prev=!prev)
+      refetch()
     })
   }
 
@@ -140,7 +140,7 @@ confirm({
   onOk(){
   supabase.from("mahasiswa").delete().in("id", selectedRowKeys)
   .then(res=>{
-  refetch().then(res=>{ return res})
+  refetch()
   setSelectedRowKeys([])
   })
   }
@@ -171,11 +171,10 @@ supabase.from("mahasiswa").select("*").order("id", {ascending: false})
   // }, [refresh])
 
   const {data, isError, isLoading, refetch} = useQuery({
-    queryKey : ['read_mhs'],
+    queryKey : ['read_mhs'],  
     queryFn : async ()=>{
       try {
         const response = await supabase.from("mahasiswa").select("*").order("id", {ascending:false})
-        console.log(response.data)
         return response.data
       } catch (error) {
         console.log(error)
@@ -190,7 +189,7 @@ supabase.from("mahasiswa").select("*").order("id", {ascending: false})
             <ModalForm 
             isOpen={isModalFormOpen}
             isCancel={()=>{setIsModalFormOpen(false)}}  
-                      
+            isRefresh={refetch}       
             />
           )
         }
@@ -201,7 +200,7 @@ supabase.from("mahasiswa").select("*").order("id", {ascending: false})
             isOpen={isModalEdit}
             isCancel={()=>{setIsModalEdit(false)}}
             data={dataEdit}
-            isRefresh={()=>{setRefresh(prev=>prev=!prev)}}
+            isRefresh={refetch}
             />
           )
         }
