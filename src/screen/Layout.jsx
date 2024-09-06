@@ -5,6 +5,7 @@ import {
   AiOutlineAudit,
   AiOutlineDashboard,
   AiOutlineLogout,
+  AiOutlineProfile,
   AiOutlineSetting,
   AiOutlineSwapLeft,
 } from "react-icons/ai";
@@ -16,6 +17,7 @@ const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const [email, setEmail] = useState("")
 
   const items = [
     {
@@ -48,26 +50,28 @@ const Layout = () => {
         navigate("/settings");
       },
     },
-    {
-      key: "/logout",
-      label: "Logout",
-      icon: <AiOutlineLogout />,
-      onClick: () => {
-        let conf = window.confirm("Apakah yakin anda ingin logout ?");
-        if (!conf) return;
-        supabase.auth.signOut().then((res) => {});
-      },
-      style: {},
-    },
+
   ];
 
   const h_items = [
     {
-      label: "Email",
+      label: email,
       key: "account",
+      icon: <AiOutlineProfile/>,
       children: [
         {
+          key: "/logout",
           label: "Logout",
+          icon: <AiOutlineLogout />,
+          onClick: () => {
+            let conf = window.confirm("Apakah yakin anda ingin logout ?");
+            if (!conf) return;
+            supabase.auth.signOut().then((res) => {});
+          },
+          style: {
+            color : "red",
+            backgroundColor : "white",
+          },
         },
       ],
     },
@@ -76,10 +80,13 @@ const Layout = () => {
   const {data, isError} = useQuery({
     queryKey : ['read_account'],
     queryFn : async()=>{
+       try {
         const response = await supabase.auth.getUser()
-        console.log(response.data.user.email)
-        
+        setEmail(response.data.user.email)
         return response
+       } catch (error) {
+        console.log(error)
+       }
     }
   })
   return (

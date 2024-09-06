@@ -1,4 +1,4 @@
-import { Button, Popconfirm, Table, Modal, Input } from 'antd'
+import { Button, Popconfirm, Table, Modal, Input, Pagination } from 'antd'
 import React, { useEffect, useState } from 'react'
 import supabase from '../connector'
 import ModalForm from '../components/ModalForm'
@@ -12,6 +12,13 @@ const ListMahasiwa = () => {
   
   const [isModalEdit, setIsModalEdit] = useState(false)
   const [dataEdit, setDataEdit] = useState({})
+
+  // current page / page saat ini
+  const [page, setPage]  = useState(1)
+  // berapa data yang ditampilkan
+  const [limit, setLimit]= useState(10)
+  // jumlah seluruh data
+  const [totalData, setTotalData] = useState(0)
 
   // const [refresh, setRefresh] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
@@ -171,11 +178,22 @@ supabase.from("mahasiswa").select("*").order("id", {ascending: false})
   // }, [refresh])
 
   const {data, isError, isLoading, refetch} = useQuery({
-    queryKey : ['read_mhs'],  
-    queryFn : async ()=>{
+    queryKey : ['read_mhs', page, limit],  
+    queryFn : async ({queryKey})=>{
       try {
-        const response = await supabase.from("mahasiswa").select("*").order("id", {ascending:false})
-        return response.data
+        let currentPage = queryKey[1]
+        let currentLimit = queryKey[2]
+        let start = (currentPage-1) * currentLimit
+        let end = start + currentLimit -1
+
+        let {data, count} = await supabase.from("mahasiswa").select("*", {count: "exact"}).order("id", {ascending:false}).range(start, end)
+        
+        setTotalData(count)
+        console.log(data)
+        
+        return data
+        
+        
       } catch (error) {
         console.log(error)
       }
@@ -240,8 +258,24 @@ supabase.from("mahasiswa").select("*").order("id", {ascending: false})
         <Table
         columns={column }
         dataSource={data}
+        pagination={false}
         rowSelection = {rowSelection}
         rowKey="id"
+        loading={isLoading}
+        />
+        <Pagination 
+        current={page}
+        total={totalData}
+        pageSize={limit}
+        onChange={(e)=>{
+          setPage(e)
+          refetch()
+        }}
+        showSizeChanger
+        onShowSizeChange={(current, pageSize)=>{
+        setLimit(pageSize)
+        }}
+
         />
     </div>
   )
