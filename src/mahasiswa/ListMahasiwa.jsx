@@ -5,6 +5,8 @@ import ModalForm from '../components/ModalForm'
 import Chance from 'chance'
 import ModalFormEdit from '../components/ModalFormEdit'
 import { useQuery } from '@tanstack/react-query'
+import { AiFillMessage, AiOutlineMessage } from 'react-icons/ai'
+import { useNavigate } from 'react-router-dom'
 
 const ListMahasiwa = () => {
   const [dataMhs, setDataMhs] = useState([])
@@ -12,6 +14,7 @@ const ListMahasiwa = () => {
   
   const [isModalEdit, setIsModalEdit] = useState(false)
   const [dataEdit, setDataEdit] = useState({})
+  const navigate = useNavigate()
 
   // current page / page saat ini
   const [page, setPage]  = useState(1)
@@ -124,6 +127,22 @@ const ListMahasiwa = () => {
          >
           Edit
          </Button>
+            {
+              data.messages.length >0 &&(
+                <Button 
+                type='text'
+                size='large'
+                icon = {<AiOutlineMessage className='text-yellow-500'/>}
+                onClick={()=>{
+                  navigate(`/mahasiswa/messages?id=${data.id}&nama=${data.nama}`)
+                }}
+                />
+              )
+            }
+        
+          
+        
+      
         </div>
       ) 
     }
@@ -186,7 +205,7 @@ supabase.from("mahasiswa").select("*").order("id", {ascending: false})
         let start = (currentPage-1) * currentLimit
         let end = start + currentLimit -1
 
-        let {data, count} = await supabase.from("mahasiswa").select("*", {count: "exact"}).order("id", {ascending:false}).range(start, end)
+        let {data, count} = await supabase.from("mahasiswa").select("*, messages(*) ", {count: "exact"}).order("id", {ascending:false}).range(start, end)
         
         setTotalData(count)
         console.log(data)

@@ -5,6 +5,8 @@ import Register from './login/Register';
 import Layout from './screen/Layout';
 import supabase from './connector';
 import ListMahasiwa from './mahasiswa/ListMahasiwa';
+import Messages from './mahasiswa/Messages';
+import SendMessages from './mahasiswa/SendMessages';
 
 const App = () => {
   const [session, setSession] = useState(null);
@@ -52,6 +54,8 @@ const App = () => {
         <Route index element={<h1>Dashboard</h1>} />
         <Route path='/mahasiswa' element={<ListMahasiwa />} />
         <Route path='/settings' element={<h1>Settings</h1>} />
+        <Route path='/mahasiswa/messages' element={<Messages/>} />
+        <Route path='/send_messages' element={<SendMessages/>}/>
       </Route>
     </Routes>
   );

@@ -5,6 +5,7 @@ import {
   AiOutlineAudit,
   AiOutlineDashboard,
   AiOutlineLogout,
+  AiOutlineMessage,
   AiOutlineProfile,
   AiOutlineSetting,
   AiOutlineSwapLeft,
@@ -41,6 +42,14 @@ const Layout = () => {
       onClick: () => {
         navigate("/mahasiswa");
       },
+    },
+    {
+      key : "/send_messages",
+      label : "Send Messages",
+      icon : <AiOutlineMessage/>,
+      onClick : ()=>{
+        navigate("/send_messages")
+      }
     },
     {
       key: "/settings",
